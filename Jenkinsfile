@@ -13,38 +13,48 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
+                echo "🔹 Cloning repository from GitHub..."
                 git url: "${GIT_REPO}", branch: 'main'
+                echo "✅ Repository cloned successfully!"
             }
         }
 
         stage('Build Docker Image') {
             steps {
+                echo "🔹 Starting Docker image build..."
                 sh "docker build -t ${DOCKER_IMAGE} ."
+                echo "✅ Docker image build completed!"
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                withDockerRegistry([credentialsId: 'dockerhub-creds1', url: '']) {
+                echo "🔹 Logging into Docker Hub..."
+                withDockerRegistry([credentialsId: 'dockerhub-creds1', url: 'https://index.docker.io/v1/']) {
+                    echo "🔹 Pushing image to Docker Hub..."
                     sh "docker push ${DOCKER_IMAGE}"
                 }
+                echo "✅ Docker image pushed successfully!"
             }
         }
 
         stage('Deploy') {
             steps {
+                echo "🔹 Deploying container..."
                 sh "docker rm -f my-node-app || true"
+                sh "docker pull ${DOCKER_IMAGE}"  // Ensures latest image is used
                 sh "docker run -d --name my-node-app -p 3000:3000 ${DOCKER_IMAGE}"
+                echo "✅ Container deployed successfully!"
             }
         }
     }
 
     post {
         success {
-            echo '🎉 Deployment successful!'
+            echo "🎉 Deployment successful!"
         }
         failure {
-            echo '❌ Pipeline failed. Check logs.'
+            echo "❌ Pipeline failed. Check logs."
         }
     }
 }
