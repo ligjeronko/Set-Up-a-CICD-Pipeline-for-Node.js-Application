@@ -6,6 +6,10 @@ pipeline {
         GIT_REPO = "https://github.com/ligjeronko/Set-Up-a-CICD-Pipeline-for-Node.js-Application.git"
     }
 
+    triggers {
+        githubPush()
+    }
+
     stages {
         stage('Clone Repository') {
             steps {
