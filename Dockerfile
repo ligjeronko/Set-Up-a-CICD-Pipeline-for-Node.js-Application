@@ -1,5 +1,8 @@
 # Use an official Node.js image
-FROM node:18
+FROM node:18-bullseye-slim
+
+# Update OS packages to reduce vulnerabilities
+RUN apt-get update && apt-get upgrade -y && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory inside the container
 WORKDIR /app
