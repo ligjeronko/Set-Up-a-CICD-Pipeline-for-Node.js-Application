@@ -24,7 +24,7 @@ pipeline {
             steps {
                 script {
                     bat 'npm install mocha --save-dev'
-                    bat 'npm test || exit 0'  // Continue pipeline even if tests fail
+                    bat 'npm test || exit 0'
                 }
             }
         }
@@ -40,8 +40,9 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    bat "docker stop node-app || true"
-                    bat "docker rm node-app || true"
+                    // Using cmd /c to properly handle command chaining
+                    bat 'cmd /c "docker stop node-app 2>nul || echo Container not running"'
+                    bat 'cmd /c "docker rm node-app 2>nul || echo Container not exists"'
                     bat "docker run -d -p 3000:3000 --name node-app ${DOCKER_IMAGE}"
                 }
             }
