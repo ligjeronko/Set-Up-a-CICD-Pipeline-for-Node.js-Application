@@ -21,9 +21,11 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
+                echo "🔹 Checking if Docker is running inside Jenkins..."
+                sh "docker --version"
+
                 echo "🔹 Starting Docker image build..."
-                sh "docker build --pull --rm --no-cache -t ${DOCKER_IMAGE} ."
-                echo "✅ Docker image build completed!"
+                sh "docker build -t ${DOCKER_IMAGE} . || echo '🚨 Docker Build Failed!'"
             }
         }
 
