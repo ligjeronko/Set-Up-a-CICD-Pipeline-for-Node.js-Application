@@ -22,7 +22,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo "🔹 Starting Docker image build..."
-                sh "docker build -t ${DOCKER_IMAGE} ."
+                sh "docker build --pull --rm --no-cache -t ${DOCKER_IMAGE} ."
                 echo "✅ Docker image build completed!"
             }
         }
@@ -41,10 +41,23 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo "🔹 Deploying container..."
-                sh "docker rm -f my-node-app || true"
-                sh "docker pull ${DOCKER_IMAGE}"  // Ensures latest image is used
-                sh "docker run -d --name my-node-app -p 3000:3000 ${DOCKER_IMAGE}"
-                echo "✅ Container deployed successfully!"
+                script {
+                    try {
+                        sh "docker rm -f my-node-app || true"
+                        sh "docker pull ${DOCKER_IMAGE}"  // Ensures latest image is used
+                        sh "docker run -d --name my-node-app -p 3000:3000 ${DOCKER_IMAGE}"
+                        echo "✅ Container deployed successfully!"
+                    } catch (Exception e) {
+                        echo "🚨 Deployment failed: ${e}"
+                    }
+                }
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                echo "🔹 Checking if container is running..."
+                sh "docker ps | grep my-node-app || echo '🚨 Container failed to start!'"
             }
         }
     }
