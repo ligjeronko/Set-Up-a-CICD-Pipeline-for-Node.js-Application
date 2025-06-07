@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "ronornon/my-node-app"
+        DOCKER_IMAGE = "ligjeronko/my-node-app"
         GIT_REPO = "https://github.com/ligjeronko/Set-Up-a-CICD-Pipeline-for-Node.js-Application.git"
     }
 
