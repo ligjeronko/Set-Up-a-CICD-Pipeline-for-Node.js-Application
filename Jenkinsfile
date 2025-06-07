@@ -1,4 +1,4 @@
-pipeline {
+﻿pipeline {
     agent any
 
     environment {
@@ -16,22 +16,22 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                echo "🔹 Cloning repository from GitHub..."
+                echo "ðŸ”¹ Cloning repository from GitHub..."
                 git url: "${GIT_REPO}", branch: 'main'
-                echo "✅ Repository cloned successfully!"
+                echo "âœ… Repository cloned successfully!"
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                echo "🔹 Checking if Docker is running inside Jenkins..."
-                sh "docker --version || echo '🚨 Docker not found!'"
+                echo "ðŸ”¹ Checking if Docker is running inside Jenkins..."
+                sh "docker --version || echo 'ðŸš¨ Docker not found!'"
 
-                echo "🔹 Starting Docker image build..."
+                echo "ðŸ”¹ Starting Docker image build..."
                 sh """
                     docker build -t ${DOCKER_IMAGE} . 
                     if [ $? -ne 0 ]; then
-                        echo '🚨 Docker Build Failed!'
+                        echo 'ðŸš¨ Docker Build Failed!'
                         exit 1
                     fi
                 """
@@ -40,24 +40,24 @@ pipeline {
 
         stage('Push to Docker Hub') {
             steps {
-                echo "🔹 Logging into Docker Hub..."
+                echo "ðŸ”¹ Logging into Docker Hub..."
                 withDockerRegistry([credentialsId: "${DOCKER_CREDENTIALS_ID}", url: 'https://index.docker.io/v1/']) {
-                    echo "🔹 Pushing image to Docker Hub..."
+                    echo "ðŸ”¹ Pushing image to Docker Hub..."
                     sh """
                         docker push ${DOCKER_IMAGE}
                         if [ $? -ne 0 ]; then
-                            echo '🚨 Docker Push Failed!'
+                            echo 'ðŸš¨ Docker Push Failed!'
                             exit 1
                         fi
                     """
                 }
-                echo "✅ Docker image pushed successfully!"
+                echo "âœ… Docker image pushed successfully!"
             }
         }
 
         stage('Deploy') {
             steps {
-                echo "🔹 Deploying container..."
+                echo "ðŸ”¹ Deploying container..."
                 script {
                     try {
                         sh """
@@ -65,9 +65,9 @@ pipeline {
                             docker pull ${DOCKER_IMAGE}
                             docker run -d --name my-node-app -p 3000:3000 ${DOCKER_IMAGE}
                         """
-                        echo "✅ Container deployed successfully!"
+                        echo "âœ… Container deployed successfully!"
                     } catch (Exception e) {
-                        echo "🚨 Deployment failed: ${e}"
+                        echo "ðŸš¨ Deployment failed: ${e}"
                     }
                 }
             }
@@ -75,11 +75,11 @@ pipeline {
 
         stage('Verify Deployment') {
             steps {
-                echo "🔹 Checking if container is running..."
+                echo "ðŸ”¹ Checking if container is running..."
                 sh """
                     docker ps | grep my-node-app
                     if [ $? -ne 0 ]; then
-                        echo '🚨 Container failed to start!'
+                        echo 'ðŸš¨ Container failed to start!'
                         exit 1
                     fi
                 """
@@ -89,10 +89,10 @@ pipeline {
 
     post {
         success {
-            echo "🎉 Deployment successful!"
+            echo "ðŸŽ‰ Deployment successful!"
         }
         failure {
-            echo "❌ Pipeline failed. Check logs."
+            echo "âŒ Pipeline failed. Check logs."
         }
     }
 }
