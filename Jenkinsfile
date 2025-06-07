@@ -48,11 +48,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-creds1', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                        powershell '''
-                            $securePassword = ConvertTo-SecureString $env:DOCKER_PASSWORD -AsPlainText -Force
-                            $credObject = New-Object System.Management.Automation.PSCredential ($env:DOCKER_USERNAME, $securePassword)
-                            $credObject.GetNetworkCredential().Password | docker login -u $env:DOCKER_USERNAME --password-stdin
-                        '''
+                        bat 'docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%'
                     }
                 }
             }
