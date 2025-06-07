@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds1')
         DOCKER_IMAGE = 'ligjeronko/node-app'
         DOCKER_TAG = 'latest'
         NODE_ENV = 'production'
@@ -31,6 +30,7 @@ pipeline {
         stage('Test') {
             steps {
                 script {
+                    bat 'npm install -g mocha'
                     bat 'npm install mocha --save-dev'
                     bat 'npm test || exit 0'
                 }
@@ -48,7 +48,9 @@ pipeline {
         stage('Login to DockerHub') {
             steps {
                 script {
-                    bat 'echo %DOCKERHUB_CREDENTIALS_PSW%| docker login -u %DOCKERHUB_CREDENTIALS_USR% --password-stdin'
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-creds1', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                        bat "echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin"
+                    }
                 }
             }
         }
