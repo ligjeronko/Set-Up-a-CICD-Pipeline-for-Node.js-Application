@@ -1,5 +1,5 @@
 # Use an official Node.js image
-FROM node:18-bullseye-slim
+FROM node:18.19.1-alpine3.19
 
 # Update OS packages to reduce vulnerabilities
 RUN apt-get update && apt-get upgrade -y && apt-get clean && rm -rf /var/lib/apt/lists/*
